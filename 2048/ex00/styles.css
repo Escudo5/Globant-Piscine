@@ -1,0 +1,149 @@
+body{
+    font-family: Arial, sans-serif; /* la letra de toda la pagina es Arial*/
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /*FOndo degradado morado*/
+    display: flex; /*modo de diseño flexible para poder centrar cosas*/
+    justify-content: center; /*centrar horizontal*/
+    align-items: center; /*centrar vertical*/
+    min-height: 100vh; /*la pagina ocupa toda la altura de la pagina*/
+}
+
+.game-container{ /* se aplica al <div class="game-container"> */
+    background: #faf8ef; /* fondo beige/crema */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /*sombra efecto 3D*/
+}
+
+h1{
+    color: #776e65;
+    font-size: 60px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.grid-container{
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 10px;
+    background-color: #bbada0;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.grid-cell{
+    background: #cdc1b4;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.score-container{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#restart-btn{
+    background: #8f7a66;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tile-2{
+    background: #eee4da;
+    color: #776e65;
+}
+
+.tile-4{
+    background: #ede0c8;
+    color: #776e65;
+}
+
+.tile-8{
+    background: #f2b179;
+    color: #f9f6f2;
+}
+
+.tile-16{
+    background: #f59563;
+    color: #f9f6f2;
+}
+
+.tile-32 {
+    background: #f67c5f;
+    color: #f9f6f2;
+}
+
+.tile-64 {
+    background: #f65e3b;
+    color: #f9f6f2;
+}
+
+.tile-128 {
+    background: #edcf72;
+    color: #f9f6f2;
+    font-size: 30px;  /* Números más grandes necesitan letra más pequeña */
+}
+
+.tile-512 {
+    background: #edc850;
+    color: #f9f6f2;
+    font-size: 30px;
+}
+
+.tile-1024 {
+    background: #edc53f;
+    color: #f9f6f2;
+    font-size: 25px;  /* 4 dígitos = letra aún más pequeña */
+}
+
+.tile-2048 {
+    background: #edc22e;
+    color: #f9f6f2;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+/*ANIMACIONES*/
+
+/* Animación cuando aparece una ficha nueva */
+@keyframes appear {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Animación cuando se fusionan fichas */
+@keyframes merge {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Aplicar animación a celdas nuevas */
+.grid-cell {
+    animation: appear 0. 2s ease-in-out;
+}
