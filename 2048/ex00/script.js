@@ -1,5 +1,24 @@
 let board = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]];
 
+function moveUp()
+{
+    console.log("Moviendo ARRIBA");
+}
+
+function moveDown()
+{
+    console.log("moviendo ABAJO");
+}
+
+function moveLeft()
+{
+    console.log("moviendo IZQUIERDA");
+}
+
+function moveRight()
+{
+    console.log("moviendo DERECHA");
+}
 function initBoard()
 {
     board = [
@@ -28,7 +47,21 @@ window.onload = function()
     renderBoard();
     let score = document.getElementById('score');
     console.log(score);
+    document.addEventListener('keydown', function(event)
+    {
+        if (event.key.startsWith('Arrow'))
+            event.preventDefault(); //para evitar scroll al pulsar las flechas
+        if (event.key === 'ArrowUp')
+            moveUp();
+        if (event.key === 'ArrowDown')
+            moveDown();
+        if (event.key === 'ArrowLeft')
+            moveLeft();
+        if (event.key === 'ArrowRight')
+            moveRight();
+    });
 }
+
 
 function renderBoard()
 {
@@ -68,7 +101,7 @@ function addRandomTile()
         }
     }
     //comprobar que celda esta vacia y pushearlo a emptycells para elegir una.
-    
+
     console.log("Celdas vacías", emptyCells);
     if (emptyCells.length === 0)
         return;
@@ -81,3 +114,6 @@ function addRandomTile()
     board[randomCell.row][randomCell.col] = value;
     console.log("Se añadio un ", value, "en poscioin", randomCell);
 }
+
+// LISTENERS
+
