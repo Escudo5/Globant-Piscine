@@ -1,0 +1,7 @@
+version: '3.8'
+services: 
+  "2048":
+    build: .   #constuir mi imagen de docker con los archivos ya copiados
+    ports:
+      - "8080:80"
+  
