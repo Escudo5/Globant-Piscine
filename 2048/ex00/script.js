@@ -1,41 +1,14 @@
 let board = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]];
 
-function moveUp()
-{
-    console.log("Moviendo ARRIBA");
-}
 
-function moveDown()
-{
-    console.log("moviendo ABAJO");
-}
 
-function moveLeft(row)
-{
-    for (let row = 0; row < 4; row++)
-    {
-        board[row] = moveRowLeft(board[row]);
-    }
-    renderBoard();
-    console.log("movimiento a la izquierda");
-}
-
-function moveRight()
-{
-    for (let row = 0; row < 4; row++)
-    {
-        board[row] = moveRowRight(board[row]);
-    }
-    renderBoard();
-    console.log("moviendo derecha");
-}
 function initBoard()
 {
     board = [
-        [2, 0, 0, 4],
-        [2, 0, 2, 0],
-        [0, 0, 4, 4],
-        [2, 2, 2, 2]
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
     ];
     // for (let row = 0; row < 4; row++)
     // {
@@ -52,7 +25,7 @@ function initBoard()
 window.onload = function()
 {
     initBoard();
-    console.log("window loaded");
+    addRandomTile();
     addRandomTile();
     renderBoard();
     let score = document.getElementById('score');
@@ -70,11 +43,7 @@ window.onload = function()
         if (event.key === 'ArrowRight')
             moveRight();
     });
-    console.log(moveRowLeft([0, 2, 0, 4]));  // [2, 4, 0, 0]
-    console.log(moveRowLeft([2, 2, 4, 4]));  // [4, 8, 0, 0]
-    console.log(moveRowLeft([2, 0, 2, 2]));  // [4, 2, 0, 0]
-    console.log(moveRowLeft([4, 4, 4, 4]));  // [8, 8, 0, 0]
-
+    
 }
 
 
@@ -84,14 +53,14 @@ function renderBoard()
     grid.innerHTML = ''; // limpia todo el contenido del grid. Para teenr siempre 16 celdas. Si no habria cada vez mas celdas.
     //recorrer tablero y crear celdas
     for(let row = 0; row < 4; row++)
-    {
-        for(let col = 0; col < 4; col++)
         {
+            for(let col = 0; col < 4; col++)
+                {
             let value = board[row][col]; //lee e valor de esa posicion en el tablero. row=0, col=1 board[0][1].
             let cell = document.createElement('div'); //creo  un div en memoria (no esta en HTML todavia)
             cell.classList.add('grid-cell'); //pone la clase grid-cell (estilos)
             if (value !== 0)
-            {
+                {
                 cell.textContent = value;
                 cell.classList.add('tile-' + value); //classList = ['grid-cell', 'tile-(value)'].
             }
@@ -116,18 +85,14 @@ function addRandomTile()
         }
     }
     //comprobar que celda esta vacia y pushearlo a emptycells para elegir una.
-
-    console.log("Celdas vacías", emptyCells);
+    
     if (emptyCells.length === 0)
         return;
-
     //elegir celda random vacia y añadirle valor 2 o 4.
     let randomIndex = Math.floor(Math.random() * emptyCells.length);
     let randomCell = emptyCells[randomIndex];
-    console.log("celda elegida:", randomCell);
     let value = Math.random()  < 0.9 ? 2 : 4; // si value < 0.9 pone 2, si no 4 (90% posibilidades 2)
     board[randomCell.row][randomCell.col] = value;
-    console.log("Se añadio un ", value, "en poscioin", randomCell);
 }
 
 
@@ -139,13 +104,13 @@ function compressRow(row)
 {
     let result = [];
     for (let i = 0; i < row.length; i++)
-    {
-        if (row[i] !== 0)
-            result.push(row[i]);
+        {
+            if (row[i] !== 0)
+                result.push(row[i]);
+        }
+        return result;
     }
-    return result;
-}
-
+    
 function mergeRow(row)
 {
     let result = [];
@@ -154,10 +119,10 @@ function mergeRow(row)
     while (i < row.length)
     {
         if (i + 1 < row.length && row[i] === row[i + 1])
-        {
-            result.push(row[i] * 2);
-            i += 2;
-        }
+            {
+                result.push(row[i] * 2);
+                i += 2;
+            }
         else
         {
             result.push(row[i]);
@@ -172,12 +137,12 @@ function mergeRow(row)
 function padRow(row)
 {
     while (row.length < 4)
-    {
-        row.push(0);
-    }
-    return row;
+        {
+            row.push(0);
+        }
+        return row;
 }
-
+    
 function moveRowLeft(row) 
 {
     let compressed = compressRow(row);
@@ -185,14 +150,79 @@ function moveRowLeft(row)
     let padded = padRow(merged);
     return padded;
 }
-
-
-// MOVER DERECHA
-
+    
+    // MOVER DERECHA
+    
 function moveRowRight(row)
 {
     let reversed = [...row].reverse();
     let moved = moveRowLeft(reversed);
     let result = moved.reverse();
     return result;
+}
+    
+    
+function getCol(colIndex)
+{
+    let column = [];
+    for (let row = 0; row < 4; row++)
+        column.push(board[row][colIndex]);
+    return column;
+}
+    
+function setColumn(colIndex, column)
+{
+    for (let row = 0; row < 4; row++)
+        board[row][colIndex] = column[row];
+}
+    
+function moveUp() 
+{
+    let oldBoard = JSON.stringify(board);
+    for (let col = 0; col < 4; col++) {
+        let column = getCol(col);
+        let moved = moveRowLeft(column);
+        setColumn(col, moved);
+    }
+    if (oldBoard !== JSON.stringify(board)) {
+        addRandomTile();
+    }
+    renderBoard();
+}
+        
+function moveDown()
+{
+    let oldBoard = JSON.stringify(board);
+    for (let col = 0; col < 4; col++)
+    {
+        let column = getCol(col);
+        let moved = moveRowRight(column);
+        setColumn(col, moved);
+    }
+    if (oldBoard !== JSON.stringify(board))
+        addRandomTile();
+    renderBoard();
+}
+function moveLeft(row)
+{
+    let oldBoard = JSON.stringify(board);
+    for (let row = 0; row < 4; row++)
+    {
+        board[row] = moveRowLeft(board[row]);
+    }
+    if (oldBoard !== JSON.stringify(board))
+        addRandomTile();
+    renderBoard();
+}
+
+function moveRight()
+{
+    let oldBoard = JSON.stringify(board);
+    for (let row = 0; row < 4; row++)
+    {
+        board[row] = moveRowRight(board[row]);
+    }
+    if (oldBoard !== JSON.stringify(board));
+        addRandomTile();
+    renderBoard();
 }
