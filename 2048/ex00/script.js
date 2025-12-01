@@ -10,22 +10,32 @@ function moveDown()
     console.log("moviendo ABAJO");
 }
 
-function moveLeft()
+function moveLeft(row)
 {
-    console.log("moviendo IZQUIERDA");
+    for (let row = 0; row < 4; row++)
+    {
+        board[row] = moveRowLeft(board[row]);
+    }
+    renderBoard();
+    console.log("movimiento a la izquierda");
 }
 
 function moveRight()
 {
-    console.log("moviendo DERECHA");
+    for (let row = 0; row < 4; row++)
+    {
+        board[row] = moveRowRight(board[row]);
+    }
+    renderBoard();
+    console.log("moviendo derecha");
 }
 function initBoard()
 {
     board = [
-        [2, 0, 0, 0],
-        [0, 4, 0, 0],
-        [0, 0, 8, 0],
-        [0, 0, 0, 16]
+        [2, 0, 0, 4],
+        [2, 0, 2, 0],
+        [0, 0, 4, 4],
+        [2, 2, 2, 2]
     ];
     // for (let row = 0; row < 4; row++)
     // {
@@ -60,6 +70,11 @@ window.onload = function()
         if (event.key === 'ArrowRight')
             moveRight();
     });
+    console.log(moveRowLeft([0, 2, 0, 4]));  // [2, 4, 0, 0]
+    console.log(moveRowLeft([2, 2, 4, 4]));  // [4, 8, 0, 0]
+    console.log(moveRowLeft([2, 0, 2, 2]));  // [4, 2, 0, 0]
+    console.log(moveRowLeft([4, 4, 4, 4]));  // [8, 8, 0, 0]
+
 }
 
 
@@ -115,5 +130,69 @@ function addRandomTile()
     console.log("Se añadio un ", value, "en poscioin", randomCell);
 }
 
-// LISTENERS
 
+// MOVIMIENTO
+
+//comprimir fila (quitar ceros)
+
+function compressRow(row)
+{
+    let result = [];
+    for (let i = 0; i < row.length; i++)
+    {
+        if (row[i] !== 0)
+            result.push(row[i]);
+    }
+    return result;
+}
+
+function mergeRow(row)
+{
+    let result = [];
+    let i = 0;
+
+    while (i < row.length)
+    {
+        if (i + 1 < row.length && row[i] === row[i + 1])
+        {
+            result.push(row[i] * 2);
+            i += 2;
+        }
+        else
+        {
+            result.push(row[i]);
+            i += 1;
+        }
+    }
+    return result;
+}
+
+// si el de al lado es igual a este, los sumo y avanzo 2 casillas. Si no, añado valor normal y avanzo una.
+
+function padRow(row)
+{
+    while (row.length < 4)
+    {
+        row.push(0);
+    }
+    return row;
+}
+
+function moveRowLeft(row) 
+{
+    let compressed = compressRow(row);
+    let merged = mergeRow(compressed);
+    let padded = padRow(merged);
+    return padded;
+}
+
+
+// MOVER DERECHA
+
+function moveRowRight(row)
+{
+    let reversed = [...row].reverse();
+    let moved = moveRowLeft(reversed);
+    let result = moved.reverse();
+    return result;
+}
