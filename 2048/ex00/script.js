@@ -1,4 +1,5 @@
 let board = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]];
+let score;
 
 
 
@@ -10,6 +11,8 @@ function initBoard()
         [0, 0, 0, 0],
         [0, 0, 0, 0]
     ];
+    score = 0;
+    updateScore();
     // for (let row = 0; row < 4; row++)
     // {
     //     board[row] = []; //creo un array vacio para la fila
@@ -114,13 +117,16 @@ function compressRow(row)
 function mergeRow(row)
 {
     let result = [];
+    let points = 0;
     let i = 0;
 
     while (i < row.length)
     {
         if (i + 1 < row.length && row[i] === row[i + 1])
             {
-                result.push(row[i] * 2);
+                let mergedValue = row[i] * 2;
+                result.push(mergedValue);
+                points += mergedValue;
                 i += 2;
             }
         else
@@ -129,7 +135,7 @@ function mergeRow(row)
             i += 1;
         }
     }
-    return result;
+    return {row: result, points: points};
 }
 
 // si el de al lado es igual a este, los sumo y avanzo 2 casillas. Si no, añado valor normal y avanzo una.
@@ -147,8 +153,8 @@ function moveRowLeft(row)
 {
     let compressed = compressRow(row);
     let merged = mergeRow(compressed);
-    let padded = padRow(merged);
-    return padded;
+    let padded = padRow(merged.row);
+    return {row: padded, points : merged.points};
 }
     
     // MOVER DERECHA
@@ -157,8 +163,8 @@ function moveRowRight(row)
 {
     let reversed = [...row].reverse();
     let moved = moveRowLeft(reversed);
-    let result = moved.reverse();
-    return result;
+    let result = moved.row.reverse();
+    return {row: result, points: moved.points};
 }
     
     
@@ -179,50 +185,84 @@ function setColumn(colIndex, column)
 function moveUp() 
 {
     let oldBoard = JSON.stringify(board);
+    let earnedPoints = 0;
+    
     for (let col = 0; col < 4; col++) {
         let column = getCol(col);
-        let moved = moveRowLeft(column);
-        setColumn(col, moved);
+        let result = moveRowLeft(column);  // Devuelve objeto
+        setColumn(col, result.row);
+        earnedPoints += result. points;
     }
-    if (oldBoard !== JSON.stringify(board)) {
+    
+    if (oldBoard !== JSON. stringify(board)) {
+        score += earnedPoints;
+        updateScore();
         addRandomTile();
     }
+    
     renderBoard();
 }
         
 function moveDown()
 {
     let oldBoard = JSON.stringify(board);
+    let earnedPoints = 0;
     for (let col = 0; col < 4; col++)
     {
         let column = getCol(col);
-        let moved = moveRowRight(column);
-        setColumn(col, moved);
+        let result = moveRowRight(column);
+        setColumn(col, result.row);
+        earnedPoints += result.points;
     }
     if (oldBoard !== JSON.stringify(board))
+    {
+        score += earnedPoints;
+        updateScore();
         addRandomTile();
+    }
     renderBoard();
 }
 function moveLeft(row)
 {
     let oldBoard = JSON.stringify(board);
+    let earnedPoints = 0;
     for (let row = 0; row < 4; row++)
     {
-        board[row] = moveRowLeft(board[row]);
+        let result = moveRowLeft(board[row]);
+        board[row] = result.row;
+        earnedPoints += result.points;
     }
     if (oldBoard !== JSON.stringify(board))
+    {
+        score += earnedPoints;
+        updateScore();
         addRandomTile();
+    }
     renderBoard();
 }
 
-function moveRight()
+function moveRight() 
 {
     let oldBoard = JSON.stringify(board);
-    for (let row = 0; row < 4; row++)
-    {
-        board[row] = moveRowRight(board[row]);
+    let earnedPoints = 0;
+    
+    for (let row = 0; row < 4; row++) {
+        let result = moveRowRight(board[row]);
+        board[row] = result.row;
+        earnedPoints += result.points;
     }
-    if (oldBoard !== JSON.stringify(board));
+    
+    if (oldBoard !== JSON.stringify(board)) {
+        score += earnedPoints;
+        updateScore();
         addRandomTile();
+    }
+    
     renderBoard();
+}
+
+function updateScore()
+{
+    let scoreElement = document.getElementById('score');
+    scoreElement.textContent = score;
 }
