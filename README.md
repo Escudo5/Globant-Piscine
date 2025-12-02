@@ -72,6 +72,10 @@ Este proyecto es una implementación desde cero utilizando **HTML5**, **CSS3** y
 
 ---
 
+### Imagen del juego
+<img width="744" height="942" alt="image" src="https://github.com/user-attachments/assets/f6cb67de-aa66-42c5-883e-983b73175e12" />
+
+
 ## 🛠️ Tecnologías Utilizadas
 
 ### Frontend
