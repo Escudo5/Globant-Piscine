@@ -1,17 +1,22 @@
 let board = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]];
 let score;
+let gameOver = false;
+let isAnimating = false;
 
 
 
 function initBoard()
 {
     board = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
     ];
     score = 0;
+    gameOver = false;
+    isAnimating = false;
+    // renderBoard();
     updateScore();
     // for (let row = 0; row < 4; row++)
     // {
@@ -21,34 +26,8 @@ function initBoard()
     //         board[row][col] = 0;
     //     }
     // }
-    console.log("Tablero iniciado", board);
+    // console.log("Tablero iniciado", board);
 }
-
-//inicia el tablero todo a 0 o con numeros de prueba, lo imprime por consola.
-window.onload = function()
-{
-    initBoard();
-    addRandomTile();
-    addRandomTile();
-    renderBoard();
-    let score = document.getElementById('score');
-    console.log(score);
-    document.addEventListener('keydown', function(event)
-    {
-        if (event.key.startsWith('Arrow'))
-            event.preventDefault(); //para evitar scroll al pulsar las flechas
-        if (event.key === 'ArrowUp')
-            moveUp();
-        if (event.key === 'ArrowDown')
-            moveDown();
-        if (event.key === 'ArrowLeft')
-            moveLeft();
-        if (event.key === 'ArrowRight')
-            moveRight();
-    });
-    
-}
-
 
 function renderBoard()
 {
@@ -71,11 +50,6 @@ function renderBoard()
         }
     }
 }
-
-//creo grid y recorro todo asignando valor en cada posicion. Creo un div por cada posicion y le meto la clase grid
-//si el valor no es 0, le pongo el valor que corresponda y le doy color.
-
-
 function addRandomTile()
 {
     let emptyCells = [];
@@ -97,8 +71,6 @@ function addRandomTile()
     let value = Math.random()  < 0.9 ? 2 : 4; // si value < 0.9 pone 2, si no 4 (90% posibilidades 2)
     board[randomCell.row][randomCell.col] = value;
 }
-
-
 // MOVIMIENTO
 
 //comprimir fila (quitar ceros)
@@ -148,7 +120,7 @@ function padRow(row)
         }
         return row;
 }
-    
+
 function moveRowLeft(row) 
 {
     let compressed = compressRow(row);
@@ -167,7 +139,6 @@ function moveRowRight(row)
     return {row: result, points: moved.points};
 }
     
-    
 function getCol(colIndex)
 {
     let column = [];
@@ -181,7 +152,114 @@ function setColumn(colIndex, column)
     for (let row = 0; row < 4; row++)
         board[row][colIndex] = column[row];
 }
+function moveLeft() 
+{    
+    if (gameOver || isAnimating)
+        return
+    isAnimating = true;
+
+    let oldBoard = JSON.stringify(board);
+    let earnedPoints = 0;
     
+    for (let row = 0; row < 4; row++) {
+        let result = moveRowLeft(board[row]);
+        board[row] = result.row;
+        earnedPoints += result.points;
+    }
+    
+    if (oldBoard !== JSON.stringify(board)) {
+        score += earnedPoints;
+        updateScore();
+        addRandomTile();
+        renderBoard();
+    }
+    else
+    {
+        addShakeAnimation();
+        renderBoard();
+    }
+    if (!gameOver && checkWin())
+    {
+        gameOver = true;
+        setTimeout(showWinOverlay, 300);
+        return;
+    }
+    if (!gameOver && checkLose())
+    {
+        gameOver = true;
+        setTimeout(showLoseOverlay, 300);
+        return;
+    }
+
+    setTimeout(() => {isAnimating = false;}, 150);
+    // if (checkWin()) 
+    //     {
+    //     console. log("⬅️ 🎉 GANASTE");
+    //     setTimeout(showWinOverlay, 300);
+    //     return;
+    // }
+    
+    // if (checkLose()) 
+    //     {
+    //     console.log("⬅️ 💀 PERDISTE");
+    //     setTimeout(showLoseOverlay, 300);
+    //     return;
+    // }
+
+}
+
+function moveRight() 
+{
+    let oldBoard = JSON.stringify(board);
+    let earnedPoints = 0;
+    
+    for (let row = 0; row < 4; row++) {
+        let result = moveRowRight(board[row]);
+        board[row] = result.row;
+        earnedPoints += result.points;
+    }
+    
+    if (oldBoard !== JSON.stringify(board)) {
+        score += earnedPoints;
+        updateScore();
+        addRandomTile();
+        renderBoard();
+    }
+    else
+    {
+        addShakeAnimation();
+        renderBoard();
+    }
+    if (!gameOver && checkWin())
+    {
+        gameOver = true;
+        setTimeout(showWinOverlay, 300);
+        return;
+    }
+    if (!gameOver && checkLose())
+    {
+        gameOver = true;
+        setTimeout(showLoseOverlay, 300);
+        return;
+    }
+
+    setTimeout(() => {isAnimating = false;}, 150);
+
+    // if (checkWin()) 
+    //     {
+    //     console. log("⬅️ 🎉 GANASTE");
+    //     setTimeout(showWinOverlay, 300);
+    //     return;
+    // }
+    
+    // if (checkLose()) 
+    //     {
+    //     console.log("⬅️ 💀 PERDISTE");
+    //     setTimeout(showLoseOverlay, 300);
+    //     return;
+    // }
+}
+
 function moveUp() 
 {
     let oldBoard = JSON.stringify(board);
@@ -198,9 +276,40 @@ function moveUp()
         score += earnedPoints;
         updateScore();
         addRandomTile();
+        renderBoard();
     }
+    else
+    {
+        addShakeAnimation();
+        renderBoard();
+    }
+    if (!gameOver && checkWin())
+    {
+        gameOver = true;
+        setTimeout(showWinOverlay, 300);
+        return;
+    }
+    if (!gameOver && checkLose())
+    {
+        gameOver = true;
+        setTimeout(showLoseOverlay, 300);
+        return;
+    }
+
+    setTimeout(() => {isAnimating = false;}, 150);
+    // if (checkWin()) 
+    //     {
+    //     console. log("⬅️ 🎉 GANASTE");
+    //     setTimeout(showWinOverlay, 300);
+    //     return;
+    // }
     
-    renderBoard();
+    // if (checkLose()) 
+    //     {
+    //     console.log("⬅️ 💀 PERDISTE");
+    //     setTimeout(showLoseOverlay, 300);
+    //     return;
+    // }
 }
         
 function moveDown()
@@ -219,50 +328,227 @@ function moveDown()
         score += earnedPoints;
         updateScore();
         addRandomTile();
+        renderBoard();
     }
-    renderBoard();
-}
-function moveLeft(row)
-{
-    let oldBoard = JSON.stringify(board);
-    let earnedPoints = 0;
-    for (let row = 0; row < 4; row++)
+    else
     {
-        let result = moveRowLeft(board[row]);
-        board[row] = result.row;
-        earnedPoints += result.points;
+        addShakeAnimation();
+        renderBoard();
     }
-    if (oldBoard !== JSON.stringify(board))
+    if (!gameOver && checkWin())
     {
-        score += earnedPoints;
-        updateScore();
-        addRandomTile();
+        gameOver = true;
+        setTimeout(showWinOverlay, 300);
+        return;
     }
-    renderBoard();
-}
+    if (!gameOver && checkLose())
+    {
+        gameOver = true;
+        setTimeout(showLoseOverlay, 300);
+        return;
+    }
 
-function moveRight() 
-{
-    let oldBoard = JSON.stringify(board);
-    let earnedPoints = 0;
+    setTimeout(() => {isAnimating = false;}, 150);
+    // if (checkWin()) 
+    //     {
+    //     console. log("⬅️ 🎉 GANASTE");
+    //     setTimeout(showWinOverlay, 300);
+    //     return;
+    // }
     
-    for (let row = 0; row < 4; row++) {
-        let result = moveRowRight(board[row]);
-        board[row] = result.row;
-        earnedPoints += result.points;
-    }
-    
-    if (oldBoard !== JSON.stringify(board)) {
-        score += earnedPoints;
-        updateScore();
-        addRandomTile();
-    }
-    
-    renderBoard();
+    // if (checkLose()) 
+    //     {
+    //     console.log("⬅️ 💀 PERDISTE");
+    //     setTimeout(showLoseOverlay, 300);
+    //     return;
+    // }
 }
 
 function updateScore()
 {
     let scoreElement = document.getElementById('score');
     scoreElement.textContent = score;
+
+    //animacion de pop
+    scoreElement.classList.remove('score-update');
+    void scoreElement.offsetWidth;
+    scoreElement.classList.add('score-update');
+    setTimeout(() => {scoreElement. classList.remove('score-update');}, 300);
+
+
 }
+
+// Función para mostrar overlay de victoria
+function showWinOverlay() 
+{
+    if (document.querySelector('.overlay'))
+        return;
+
+    let overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="overlay-content win">
+            <h2>🎉 ¡GANASTE!</h2>
+            <p style="font-size: 24px; margin: 20px 0;">Llegaste a 2048</p>
+            <p style="font-size: 18px;">Puntaje: <strong>${score}</strong></p>
+            <p style="font-size: 14px; color: #999; margin-top: 20px;">Haz clic para continuar</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    overlay.addEventListener('click', () => {overlay.remove();});
+}
+
+// Función para mostrar overlay de derrota
+function showLoseOverlay() 
+{
+    if (document.querySelector('.overlay'))
+        return;
+    
+    let overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+        <div class="overlay-content lose">
+            <h2>😞 Game Over</h2>
+            <p style="font-size: 24px; margin: 20px 0;">¡Inténtalo de nuevo!</p>
+            <p style="font-size: 18px;">Puntaje final: <strong>${score}</strong></p>
+            <p style="font-size: 14px; color: #999; margin-top: 20px;">Haz clic para reiniciar</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    overlay.addEventListener('click', () => {
+        overlay.remove();
+        initBoard();
+        addRandomTile();
+        addRandomTile();
+        renderBoard();
+    });
+}
+
+// Función para añadir animación shake cuando no hay movimiento
+function addShakeAnimation() 
+{
+    let grid = document.querySelector('.grid-container');
+    grid.classList.add('shake');
+    setTimeout(() => {grid.classList.remove('shake');}, 500);
+}
+
+function checkWin()
+{
+    for (let row = 0; row < 4; row++)
+    {
+        for (let col = 0; col < 4; col++)
+        {
+            if (board[row][col] === 2048)
+                return true;
+        }
+    }
+    return false;
+}
+// WIN CONDITION
+
+//Comprobamos si alguna de las celdas es 2048.
+
+// LOSE CONDITION
+
+function hasEmptyCell()
+{
+    for (let row = 0; row < 4; row++)
+    {
+        for (let col = 0; col < 4; col++)
+        {
+            if (board[row][col] === 0)
+                return true;
+        }
+    }
+    return false;
+}
+
+function hasPossibleMoves()
+{
+    for (let row = 0; row < 4; row++)
+    {
+        for (let col = 0; col < 3; col++)
+        {
+            if (board[row][col] === board[row][col + 1])
+                return true;
+        }
+    }
+    //hay dos fichas iguales adyacentes horizontalmente
+    for (let row = 0; row < 3; row++)
+    {
+        for (let col = 0; col < 4; col++)
+        {
+            if (board[row][col] === board[row + 1][col])
+                return true;
+        }
+    }
+    return false;
+    // hay 2 fichas iguales adyacentes verticalmente.
+}
+
+function checkLose() {
+    let empty = hasEmptyCell();    
+    let moves = hasPossibleMoves();
+    
+    
+    if (! empty && !moves) {
+        return true;
+    }
+    
+    return false;
+}
+
+
+
+
+//inicia el tablero todo a 0 o con numeros de prueba, lo imprime por consola.
+window.onload = function() 
+{
+    
+    initBoard();
+    addRandomTile();
+    addRandomTile();
+    renderBoard();
+    
+    // Teclas
+    document.addEventListener('keydown', function(event) {
+        if (event.key.startsWith('Arrow')) {
+            event. preventDefault();
+        }
+        
+        switch(event.key) {
+            case 'ArrowUp':
+                moveUp();
+                break;
+            case 'ArrowDown':
+                moveDown();
+                break;
+            case 'ArrowLeft':
+                moveLeft();
+                break;
+            case 'ArrowRight':
+                moveRight();
+                break;
+        }
+    });
+    let restartBtn = document. getElementById('restart-btn');
+    
+    if (restartBtn) {
+        console.log("✅ Botón encontrado, agregando event listener...");
+        
+        restartBtn.addEventListener('click', function() {
+            
+            initBoard();
+            addRandomTile();
+            addRandomTile();
+            renderBoard();
+        });
+        
+    }
+}
+
+
+
+
