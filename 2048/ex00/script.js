@@ -3,8 +3,6 @@ let score;
 let gameOver = false;
 let isAnimating = false;
 
-
-
 function initBoard()
 {
     board = [
@@ -16,17 +14,8 @@ function initBoard()
     score = 0;
     gameOver = false;
     isAnimating = false;
-    // renderBoard();
     updateScore();
-    // for (let row = 0; row < 4; row++)
-    // {
-    //     board[row] = []; //creo un array vacio para la fila
-    //     for (let col = 0; col < 4; col++)
-    //     {
-    //         board[row][col] = 0;
-    //     }
-    // }
-    // console.log("Tablero iniciado", board);
+
 }
 
 function renderBoard()
@@ -190,22 +179,7 @@ function moveLeft()
         setTimeout(showLoseOverlay, 300);
         return;
     }
-
     setTimeout(() => {isAnimating = false;}, 150);
-    // if (checkWin()) 
-    //     {
-    //     console. log("⬅️ 🎉 GANASTE");
-    //     setTimeout(showWinOverlay, 300);
-    //     return;
-    // }
-    
-    // if (checkLose()) 
-    //     {
-    //     console.log("⬅️ 💀 PERDISTE");
-    //     setTimeout(showLoseOverlay, 300);
-    //     return;
-    // }
-
 }
 
 function moveRight() 
@@ -242,22 +216,7 @@ function moveRight()
         setTimeout(showLoseOverlay, 300);
         return;
     }
-
     setTimeout(() => {isAnimating = false;}, 150);
-
-    // if (checkWin()) 
-    //     {
-    //     console. log("⬅️ 🎉 GANASTE");
-    //     setTimeout(showWinOverlay, 300);
-    //     return;
-    // }
-    
-    // if (checkLose()) 
-    //     {
-    //     console.log("⬅️ 💀 PERDISTE");
-    //     setTimeout(showLoseOverlay, 300);
-    //     return;
-    // }
 }
 
 function moveUp() 
@@ -295,21 +254,7 @@ function moveUp()
         setTimeout(showLoseOverlay, 300);
         return;
     }
-
     setTimeout(() => {isAnimating = false;}, 150);
-    // if (checkWin()) 
-    //     {
-    //     console. log("⬅️ 🎉 GANASTE");
-    //     setTimeout(showWinOverlay, 300);
-    //     return;
-    // }
-    
-    // if (checkLose()) 
-    //     {
-    //     console.log("⬅️ 💀 PERDISTE");
-    //     setTimeout(showLoseOverlay, 300);
-    //     return;
-    // }
 }
         
 function moveDown()
@@ -349,19 +294,7 @@ function moveDown()
     }
 
     setTimeout(() => {isAnimating = false;}, 150);
-    // if (checkWin()) 
-    //     {
-    //     console. log("⬅️ 🎉 GANASTE");
-    //     setTimeout(showWinOverlay, 300);
-    //     return;
-    // }
-    
-    // if (checkLose()) 
-    //     {
-    //     console.log("⬅️ 💀 PERDISTE");
-    //     setTimeout(showLoseOverlay, 300);
-    //     return;
-    // }
+
 }
 
 function updateScore()
@@ -404,7 +337,7 @@ function showLoseOverlay()
 {
     if (document.querySelector('.overlay'))
         return;
-    
+
     let overlay = document.createElement('div');
     overlay.className = 'overlay';
     overlay.innerHTML = `
