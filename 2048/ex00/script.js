@@ -18,7 +18,7 @@ function initBoard()
 
 }
 
-function renderBoard()
+function renderBoard(newFicha)
 {
     let grid = document.querySelector('.grid-container');
     grid.innerHTML = ''; // limpia todo el contenido del grid. Para teenr siempre 16 celdas. Si no habria cada vez mas celdas.
@@ -34,6 +34,11 @@ function renderBoard()
                 {
                 cell.textContent = value;
                 cell.classList.add('tile-' + value); //classList = ['grid-cell', 'tile-(value)'].
+                if (newFicha && row === newFicha.row && col === newFicha.col)
+                {
+                    cell.classList.add('new-tile');
+                    console.log("clase new-tile agregada a:", row, col);
+                }
             }
             grid.appendChild(cell); //lo meto en el html
         }
@@ -59,6 +64,7 @@ function addRandomTile()
     let randomCell = emptyCells[randomIndex];
     let value = Math.random()  < 0.9 ? 2 : 4; // si value < 0.9 pone 2, si no 4 (90% posibilidades 2)
     board[randomCell.row][randomCell.col] = value;
+    return randomCell;
 }
 // MOVIMIENTO
 
@@ -159,8 +165,8 @@ function moveLeft()
     if (oldBoard !== JSON.stringify(board)) {
         score += earnedPoints;
         updateScore();
-        addRandomTile();
-        renderBoard();
+        let newFicha = addRandomTile();
+        renderBoard(newFicha);
     }
     else
     {
