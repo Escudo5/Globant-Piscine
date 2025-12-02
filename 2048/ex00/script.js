@@ -18,7 +18,7 @@ function initBoard()
 
 }
 
-function renderBoard(newFicha)
+function renderBoard(newFicha = null, mergedPositions = [], direction = null)
 {
     let grid = document.querySelector('.grid-container');
     grid.innerHTML = ''; // limpia todo el contenido del grid. Para teenr siempre 16 celdas. Si no habria cada vez mas celdas.
@@ -31,14 +31,15 @@ function renderBoard(newFicha)
             let cell = document.createElement('div'); //creo  un div en memoria (no esta en HTML todavia)
             cell.classList.add('grid-cell'); //pone la clase grid-cell (estilos)
             if (value !== 0)
-                {
+            {
                 cell.textContent = value;
                 cell.classList.add('tile-' + value); //classList = ['grid-cell', 'tile-(value)'].
-                if (newFicha && row === newFicha.row && col === newFicha.col)
-                {
+                if (direction)
+                    cell.classList.add('slide-' + direction);
+                if (newFicha && row === newFicha.row && col === newFicha.row)
                     cell.classList.add('new-tile');
-                    console.log("clase new-tile agregada a:", row, col);
-                }
+                if (mergedPositions.some(pos => pos.row === row && pos.col === col))
+                    cell.classList.add('merged');
             }
             grid.appendChild(cell); //lo meto en el html
         }
@@ -64,7 +65,6 @@ function addRandomTile()
     let randomCell = emptyCells[randomIndex];
     let value = Math.random()  < 0.9 ? 2 : 4; // si value < 0.9 pone 2, si no 4 (90% posibilidades 2)
     board[randomCell.row][randomCell.col] = value;
-    return randomCell;
 }
 // MOVIMIENTO
 
@@ -148,30 +148,39 @@ function setColumn(colIndex, column)
         board[row][colIndex] = column[row];
 }
 function moveLeft() 
-{    
+{
     if (gameOver || isAnimating)
         return
     isAnimating = true;
 
     let oldBoard = JSON.stringify(board);
     let earnedPoints = 0;
+    let mergedPositions = [];
     
-    for (let row = 0; row < 4; row++) {
+    for (let row = 0; row < 4; row++) 
+    {
         let result = moveRowLeft(board[row]);
         board[row] = result.row;
         earnedPoints += result.points;
+    
+        if (result.merged)
+        {
+            for (let col = 0; col < result.merged.length; col++)
+                if (result.merged[col])
+                    mergedPositions.push({row: row, col: col});
+        }
     }
     
     if (oldBoard !== JSON.stringify(board)) {
         score += earnedPoints;
         updateScore();
         let newFicha = addRandomTile();
-        renderBoard(newFicha);
+        renderBoard(newFicha, mergedPositions, 'left');
     }
     else
     {
         addShakeAnimation();
-        renderBoard();
+        renderBoard(null, [], null);
     }
     if (!gameOver && checkWin())
     {
@@ -188,120 +197,174 @@ function moveLeft()
     setTimeout(() => {isAnimating = false;}, 150);
 }
 
-function moveRight() 
-{
+function moveRight() {
+    if (gameOver || isAnimating)
+        return;
+    isAnimating = true;
+
     let oldBoard = JSON.stringify(board);
     let earnedPoints = 0;
+    let mergedPositions = [];
     
     for (let row = 0; row < 4; row++) {
-        let result = moveRowRight(board[row]);
+        let result = moveRowRight(board[row]);  // ← Cambia a moveRowRight
         board[row] = result.row;
         earnedPoints += result.points;
+        
+        if (result. merged) 
+        {
+            for (let col = 0; col < result.merged.length; col++) 
+            {
+                if (result.merged[col]) 
+                {
+                    mergedPositions.push({row: row, col: col});
+                }
+            }
+        }
     }
     
-    if (oldBoard !== JSON.stringify(board)) {
+    if (oldBoard !== JSON.stringify(board)) 
+    {
         score += earnedPoints;
         updateScore();
-        addRandomTile();
-        renderBoard();
+        let newFicha = addRandomTile();
+        renderBoard(newFicha, mergedPositions, 'right');  // ← Dirección: 'right'
     }
-    else
+    else 
     {
         addShakeAnimation();
-        renderBoard();
+        renderBoard(null, [], null);
     }
+    
     if (!gameOver && checkWin())
     {
         gameOver = true;
         setTimeout(showWinOverlay, 300);
         return;
     }
-    if (!gameOver && checkLose())
+    
+    if (!gameOver && checkLose()) 
     {
         gameOver = true;
         setTimeout(showLoseOverlay, 300);
         return;
     }
+    
     setTimeout(() => {isAnimating = false;}, 150);
 }
 
 function moveUp() 
 {
-    let oldBoard = JSON.stringify(board);
+    if (gameOver || isAnimating)
+        return;
+    isAnimating = true;
+
+    let oldBoard = JSON. stringify(board);
     let earnedPoints = 0;
+    let mergedPositions = [];
     
-    for (let col = 0; col < 4; col++) {
-        let column = getCol(col);
-        let result = moveRowLeft(column);  // Devuelve objeto
-        setColumn(col, result.row);
-        earnedPoints += result. points;
+    for (let col = 0; col < 4; col++) 
+    {
+        let column = getCol(col);  // Obtener columna
+        let result = moveRowLeft(column);  // Usar moveRowLeft (mueve hacia "arriba" en vertical)
+        setColumn(col, result.row);  // Actualizar columna
+        earnedPoints += result.points;
+        
+        if (result.merged) {
+            for (let row = 0; row < result.merged. length; row++) {  // ← Iterar sobre filas
+                if (result.merged[row]) {
+                    mergedPositions.push({row: row, col: col});  // ← row/col invertidos
+                }
+            }
+        }
     }
     
-    if (oldBoard !== JSON. stringify(board)) {
+    if (oldBoard !== JSON. stringify(board)) 
+    {
         score += earnedPoints;
         updateScore();
-        addRandomTile();
-        renderBoard();
+        let newFicha = addRandomTile();
+        renderBoard(newFicha, mergedPositions, 'up');  // ← Dirección: 'up'
     }
-    else
+    else 
     {
         addShakeAnimation();
-        renderBoard();
+        renderBoard(null, [], null);
     }
-    if (!gameOver && checkWin())
+    
+    if (!gameOver && checkWin()) 
     {
         gameOver = true;
         setTimeout(showWinOverlay, 300);
         return;
     }
-    if (!gameOver && checkLose())
+    
+    if (! gameOver && checkLose()) 
     {
         gameOver = true;
         setTimeout(showLoseOverlay, 300);
         return;
     }
+    
     setTimeout(() => {isAnimating = false;}, 150);
 }
         
-function moveDown()
+function moveDown() 
 {
+    if (gameOver || isAnimating)
+        return;
+    isAnimating = true;
+
     let oldBoard = JSON.stringify(board);
     let earnedPoints = 0;
-    for (let col = 0; col < 4; col++)
+    let mergedPositions = [];
+    
+    for (let col = 0; col < 4; col++) 
     {
         let column = getCol(col);
         let result = moveRowRight(column);
         setColumn(col, result.row);
         earnedPoints += result.points;
+        
+        if (result.merged) {
+            for (let row = 0; row < result.merged.length; row++) {
+                if (result.merged[row]) {
+                    mergedPositions.push({row: row, col: col});
+                }
+            }
+        }
     }
-    if (oldBoard !== JSON.stringify(board))
+    
+    if (oldBoard !== JSON.stringify(board)) 
     {
         score += earnedPoints;
         updateScore();
-        addRandomTile();
-        renderBoard();
+        let newFicha = addRandomTile();
+        renderBoard(newFicha, mergedPositions, 'down');  // ← Dirección: 'down'
     }
-    else
+    else 
     {
         addShakeAnimation();
-        renderBoard();
+        renderBoard(null, [], null);
     }
-    if (!gameOver && checkWin())
+    
+    if (!gameOver && checkWin()) 
     {
         gameOver = true;
         setTimeout(showWinOverlay, 300);
         return;
     }
-    if (!gameOver && checkLose())
+    
+    if (!gameOver && checkLose()) 
     {
         gameOver = true;
         setTimeout(showLoseOverlay, 300);
         return;
     }
-
+    
     setTimeout(() => {isAnimating = false;}, 150);
-
 }
+
 
 function updateScore()
 {

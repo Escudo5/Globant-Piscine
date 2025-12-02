@@ -125,6 +125,7 @@ h1{
     padding: 10px;
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
 @keyframes shake {
@@ -419,4 +420,66 @@ h1{
     .tile-1024, .tile-2048 {
         font-size: 18px;
     }
+}
+
+/* Animación de deslizamiento desde diferentes direcciones */
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-20px) scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFromRight {
+    0% {
+        transform: translateX(20px) scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFromTop {
+    0% {
+        transform: translateY(-20px) scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideFromBottom {
+    0% {
+        transform: translateY(20px) scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Clases para aplicar según dirección */
+.grid-cell.slide-left {
+    animation: slideFromRight 0.15s ease-out;
+}
+
+.grid-cell.slide-right {
+    animation: slideFromLeft 0.15s ease-out;
+}
+
+.grid-cell.slide-up {
+    animation: slideFromBottom 0.15s ease-out;
+}
+
+.grid-cell.slide-down {
+    animation: slideFromTop 0.15s ease-out;
 }
